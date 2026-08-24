@@ -1,0 +1,9 @@
+*.pt
+*.pth
+_pycache_/
+.DS_Store
+results/preds/
+results/logs/
+EchoJEPA/
+EchoPrime/
+PanEcho/
