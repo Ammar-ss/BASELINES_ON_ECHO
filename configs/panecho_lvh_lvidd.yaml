@@ -1,0 +1,91 @@
+app: vjepa
+cpus_per_task: 64
+
+folder: /home/abag/baselines/runs/lvh_panecho_lvidd
+mem_per_gpu: 24G
+nodes: 4
+tasks_per_node: 1
+num_workers: 16
+
+eval_name: video_classification_frozen
+resume_checkpoint: true
+tag: lvidd-panecho-lvh-112px
+
+experiment:
+  classifier:
+    task_type: regression
+    num_heads: 16
+    num_probe_blocks: 4
+    num_targets: 1
+
+  data:
+    dataset_type: VideoDataset
+    dataset_train: /home/abag/datasets/csv/lvh_LVIDd_train.csv
+    dataset_val: /home/abag/datasets/csv/lvh_LVIDd_val.csv
+    resolution: 112
+    frames_per_clip: 16
+    frame_step: 2
+    num_segments: 2
+    num_views_per_segment: 1
+
+    target_mean: 4.7050
+    target_std: 0.8335
+
+    # Wrapper handles normalization internally. Leave as identity.
+    normalization:
+      - [0.0, 0.0, 0.0]
+      - [1.0, 1.0, 1.0]
+
+  optimization:
+    batch_size: 1
+    num_epochs: 20
+    use_bfloat16: true
+    use_pos_embed: false
+
+    # PRUNED REGRESSION GRID — 2 learning rates x 3 weight decays.
+    # Do not modify.
+    multihead_kwargs:
+      # --- lr 1e-4 ---
+      - final_lr: 0.0
+        final_weight_decay: 0.01
+        lr: 0.0001
+        start_lr: 0.0001
+        warmup: 0.0
+        weight_decay: 0.01
+      - final_lr: 0.0
+        final_weight_decay: 0.1
+        lr: 0.0001
+        start_lr: 0.0001
+        warmup: 0.0
+        weight_decay: 0.1
+      - final_lr: 0.0
+        final_weight_decay: 0.4
+        lr: 0.0001
+        start_lr: 0.0001
+        warmup: 0.0
+        weight_decay: 0.4
+      # --- lr 5e-5 ---
+      - final_lr: 0.0
+        final_weight_decay: 0.01
+        lr: 0.00005
+        start_lr: 0.00005
+        warmup: 0.0
+        weight_decay: 0.01
+      - final_lr: 0.0
+        final_weight_decay: 0.1
+        lr: 0.00005
+        start_lr: 0.00005
+        warmup: 0.0
+        weight_decay: 0.1
+      - final_lr: 0.0
+        final_weight_decay: 0.4
+        lr: 0.00005
+        start_lr: 0.00005
+        warmup: 0.0
+        weight_decay: 0.4
+
+model_kwargs:
+  checkpoint: null
+  module_name: evals.video_classification_frozen.modelcustom.panecho_encoder
+  pretrain_kwargs: {}
+  wrapper_kwargs: {}
